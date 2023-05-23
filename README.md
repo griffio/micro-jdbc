@@ -28,3 +28,7 @@ Jdbc autoClosable objects are closed in the scope of the lambda
             .readAll(personResultSetReader)
     }
 ```
+
+### TODO
+
+Transaction scope
