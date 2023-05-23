@@ -1,5 +1,7 @@
 # Micro Jdbc for Kotlin
 
+A couple of ideas with extensions for using sequential Jdbc resources and extracting result sets
+
 ### Example
 
 Jdbc autoClosable objects are closed in the scope of the lambda
@@ -10,7 +12,7 @@ Jdbc autoClosable objects are closed in the scope of the lambda
 
 ```kotlin
 
-data class Person(val name: String, val age: Int, val theOne: Boolean)
+    data class Person(val name: String, val age: Int, val theOne: Boolean)
 
     val personResultSetReader = ResultSetReader {
         val name = readString("name")
