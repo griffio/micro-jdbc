@@ -30,17 +30,15 @@ fun PreparedStatement.bindString(index: Int, value: String): PreparedStatement =
 
 fun PreparedStatement.bindBoolean(index: Int, value: Boolean): PreparedStatement = apply { setBoolean(index, value) }
 
-interface TransactionWithReturn<R> {
-    fun rollback(returnValue: R): Nothing
-}
-
-fun Connection.transaction(
-    body: Connection.() -> Unit,
-) {
+fun <T> Connection.transaction(
+    body: Connection.() -> T,
+): T {
     autoCommit = false
-    try {
-        body()
-        commit()
+    return try {
+        body().let {
+            commit()
+            it
+        }
     } catch (e: Throwable) {
         rollback()
         throw e

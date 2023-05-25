@@ -28,11 +28,13 @@ fun main() = closeableScope {
 
     people.joinToString("\n") { "${it.name}${if (it.theOne) " 'The One'" else ""} is ${it.age} years old" }
         .also(::println)
-    
-    val theOne = connection.prepareStatement("select * from people where the_one = ? order by name").closing()
+
+    val theOne = connection.transaction {
+     connection.prepareStatement("select * from people where the_one = ? order by name").closing()
         .bindBoolean(1, true)
         .executeQuery().closing()
         .readAll(personResultSetReader)
+    }
 
     theOne.joinToString("\n") { "${it.name}${if (it.theOne) " 'The One'" else ""} is ${it.age} years old" }
         .also(::println)
