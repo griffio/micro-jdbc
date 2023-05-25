@@ -33,10 +33,9 @@ fun main() = closeableScope {
      connection.prepareStatement("select * from people where the_one = ? order by name").closing()
         .bindBoolean(1, true)
         .executeQuery().closing()
-        .readAll(personResultSetReader)
+        .readOne(personResultSetReader)
     }
 
-    theOne.joinToString("\n") { "${it.name}${if (it.theOne) " 'The One'" else ""} is ${it.age} years old" }
-        .also(::println)
+    println(theOne)
 
 }

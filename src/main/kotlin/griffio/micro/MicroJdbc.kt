@@ -5,7 +5,7 @@ import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 // see https://github.com/elizarov/SerializationByConvention#reading-objects-from-db
-
+// see https://github.com/spring-projects/spring-framework/blob/main/spring-jdbc/src/main/java/org/springframework/jdbc/support/JdbcUtils.java
 fun interface ResultSetReader<out T> {
     fun ResultSet.read(): T
 }
@@ -20,6 +20,13 @@ fun <T> ResultSet.readAll(reader: ResultSetReader<T>): List<T> {
     val list = mutableListOf<T>()
     while (next()) list.add(read(reader))
     return list
+}
+
+fun <T> ResultSet.readOne(reader: ResultSetReader<T>): T {
+    check(next()) { "Expected one result, empty result found" }
+    val result = read(reader)
+    check(!next()) { "Expected one result, more results found" }
+    return result
 }
 
 fun <T> ResultSet.read(reader: ResultSetReader<T>): T = with(reader) { read() }
