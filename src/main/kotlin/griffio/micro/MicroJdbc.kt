@@ -1,5 +1,7 @@
 package griffio.micro
 
+import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 
 // see https://github.com/elizarov/SerializationByConvention#reading-objects-from-db
@@ -21,6 +23,31 @@ fun <T> ResultSet.readAll(reader: ResultSetReader<T>): List<T> {
 }
 
 fun <T> ResultSet.read(reader: ResultSetReader<T>): T = with(reader) { read() }
+
+fun PreparedStatement.bindInt(index: Int, value: Int): PreparedStatement = apply { setInt(index, value) }
+
+fun PreparedStatement.bindString(index: Int, value: String): PreparedStatement = apply { setString(index, value) }
+
+fun PreparedStatement.bindBoolean(index: Int, value: Boolean): PreparedStatement = apply { setBoolean(index, value) }
+
+interface TransactionWithReturn<R> {
+    fun rollback(returnValue: R): Nothing
+}
+
+fun Connection.transaction(
+    body: Connection.() -> Unit,
+) {
+    autoCommit = false
+    try {
+        body()
+        commit()
+    } catch (e: Throwable) {
+        rollback()
+        throw e
+    } finally {
+        autoCommit = true
+    }
+}
 
 
 
