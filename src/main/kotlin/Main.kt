@@ -22,10 +22,19 @@ fun main() = closeableScope {
         Person(name, age, theOne)
     }
 
-    val people = connection
-        .createStatement().closing()
+    val people = connection.createStatement().closing()
         .executeQuery("select * from people order by name").closing()
         .readAll(personResultSetReader)
 
-    people.joinToString("\n") {"${it.name}${if (it.theOne) " 'The One'" else ""} is ${it.age} years old" }.also(::println)
+    people.joinToString("\n") { "${it.name}${if (it.theOne) " 'The One'" else ""} is ${it.age} years old" }
+        .also(::println)
+    
+    val theOne = connection.prepareStatement("select * from people where the_one = ? order by name").closing()
+        .bindBoolean(1, true)
+        .executeQuery().closing()
+        .readAll(personResultSetReader)
+
+    theOne.joinToString("\n") { "${it.name}${if (it.theOne) " 'The One'" else ""} is ${it.age} years old" }
+        .also(::println)
+
 }
