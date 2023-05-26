@@ -30,7 +30,7 @@ fun main() = closeableScope {
         .also(::println)
 
     val theOne = connection.transaction {
-     connection.prepareStatement("select * from people where the_one = ? order by name").closing()
+        prepareStatement("select * from people where the_one = ? order by name").closing()
         .bindBoolean(1, true)
         .executeQuery().closing()
         .readOne(personResultSetReader)
