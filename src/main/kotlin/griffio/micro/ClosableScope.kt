@@ -18,16 +18,17 @@ class CloseableScope {
     }
 
     fun <T : AutoCloseable> T.closing(): T {
-        scope.add(this)
+        check(scope.add(this))
         return this
     }
 }
+
 // e.g fun doSomeWork() = closeableScope { a.closing() b.closing() c.closing() }
 // Can throw exception with suppressed exceptions
-fun closeableScope(block: CloseableScope.() -> Unit) {
+fun <T> closeableScope(block: CloseableScope.() -> T): T {
     val cs = CloseableScope()
     try {
-        cs.block()
+        return cs.block()
     } finally {
         cs.closeAll()
     }
