@@ -32,9 +32,11 @@ fun <T> ResultSet.readOne(reader: ResultSetReader<T>): T {
     return result
 }
 
+fun <T> ResultSet.readOneOrNull(reader: ResultSetReader<T>): T? = if (next()) read(reader) else null
+
 fun <T> ResultSet.read(reader: ResultSetReader<T>): T = with(reader) { read() }
 
-fun Statement.addBatch(batchSql: List<String>): Statement = apply { batchSql.forEach{ addBatch(it) } }
+fun Statement.addBatch(batchSql: List<String>): Statement = apply { batchSql.forEach { addBatch(it) } }
 
 fun PreparedStatement.bindInt(index: Int, value: Int): PreparedStatement = apply { setInt(index, value) }
 
@@ -44,22 +46,16 @@ fun PreparedStatement.bindBoolean(index: Int, value: Boolean): PreparedStatement
 
 fun PreparedStatement.bindFloat(index: Int, value: Float): PreparedStatement = apply { setFloat(index, value) }
 
-
 fun <T> Connection.transaction(
     body: Connection.() -> T,
-): T {
+): T = try {
     autoCommit = false
-    return try {
-        body().let {
-            commit()
-            it
-        }
-    } catch (e: Throwable) {
-        rollback()
-        throw e
-    } finally {
-        autoCommit = true
-    }
+    body().also { commit() }
+} catch (e: Throwable) {
+    rollback()
+    throw e
+} finally {
+    autoCommit = true
 }
 
 
