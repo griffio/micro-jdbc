@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation("org.hsqldb:hsqldb:2.7.1")
+    implementation("org.postgresql:postgresql:42.5.4")
     testImplementation(kotlin("test"))
 }
 
