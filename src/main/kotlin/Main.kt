@@ -38,4 +38,12 @@ fun main() = closeableScope {
 
     println(theOne)
 
+    val morpheus = connection.transaction {
+        prepareStatement("select * from people where name = ?").closing()
+            .bindString(1, "Morpheus")
+            .executeQuery().closing()
+            .readOneOrNull(personResultSetReader)
+    }
+
+    println(morpheus)
 }
