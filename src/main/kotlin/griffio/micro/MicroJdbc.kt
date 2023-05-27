@@ -3,6 +3,7 @@ package griffio.micro
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.SQLException
 import java.sql.Statement
 
 // see https://github.com/elizarov/SerializationByConvention#reading-objects-from-db
@@ -45,6 +46,11 @@ fun PreparedStatement.bindString(index: Int, value: String): PreparedStatement =
 fun PreparedStatement.bindBoolean(index: Int, value: Boolean): PreparedStatement = apply { setBoolean(index, value) }
 
 fun PreparedStatement.bindFloat(index: Int, value: Float): PreparedStatement = apply { setFloat(index, value) }
+
+fun PreparedStatement.executeUpdateAndGeneratedKeys(): ResultSet = executeUpdate().let {
+    it > 0 || throw SQLException("Expected updates, zero updates returned")
+    generatedKeys
+}
 
 fun <T> Connection.transaction(
     body: Connection.() -> T,
