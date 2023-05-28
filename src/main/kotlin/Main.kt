@@ -62,16 +62,21 @@ fun main() = closeableScope {
 
     println(morpheus)
 
-    val agentSmith = connection.transaction {
-        val newAvatar = Avatar(-1, "Agent Smith", 45, false)
-        prepareStatement("insert into avatars (name, age, the_one) values(?, ?, ?)", RETURN_GENERATED_KEYS).closing()
-            .bindString(1, newAvatar.name)
-            .bindInt(2, newAvatar.age)
-            .bindBoolean(3, newAvatar.theOne)
-            .executeUpdateAndGeneratedKeys().closing().readOne {
-                newAvatar.copy(id = readInt("id"))
-            }
+    fun newAvatar(name: String, age: Int, theOne: Boolean): Avatar = closeableScope {
+        connection.transaction {
+            prepareStatement(
+                "insert into avatars (name, age, the_one) values(?, ?, ?)",
+                RETURN_GENERATED_KEYS
+            ).closing()
+                .bindString(1, name)
+                .bindInt(2, age)
+                .bindBoolean(3, theOne)
+                .executeUpdateAndGeneratedKeys().closing()
+                .readOne { Avatar(readInt("id"), name, age, theOne) }
+        }
     }
+
+    val agentSmith = newAvatar("Agent Smith", 46, false)
 
     println(agentSmith)
 
