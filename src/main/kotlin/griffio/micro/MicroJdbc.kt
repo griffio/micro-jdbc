@@ -58,7 +58,11 @@ fun <T> Connection.transaction(
     autoCommit = false
     body().also { commit() }
 } catch (e: Throwable) {
-    rollback()
+    try {
+        rollback()
+    } catch (e: Exception) {
+        e.addSuppressed(e) // gotta catch 'em all
+    }
     throw e
 } finally {
     autoCommit = true
