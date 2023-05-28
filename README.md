@@ -35,14 +35,20 @@ Jdbc autoClosable objects are closed in the scope of the lambda
 ``` kotlin
 fun main() = closeableScope {
     
-    val connection = DriverManager.getConnection("jdbc:h2:mem:test").closing()
+    val connection = DriverManager.getConnection("jdbc:h2:mem:matrix").closing()
     
-    val morpheus = connection.transaction {
-        prepareStatement("select * from people where name = ?").closing()
-            .bindString(1, "Morpheus")
-            .executeQuery().closing()
-            .readOneOrNull(personResultSetReader)
+    fun newAvatar(name: String, age: Int, theOne: Boolean): Avatar = closeableScope {
+        connection.transaction {
+            prepareStatement(
+                "insert into avatars (name, age, the_one) values(?, ?, ?)",
+                RETURN_GENERATED_KEYS
+            ).closing()
+                .bindString(1, name)
+                .bindInt(2, age)
+                .bindBoolean(3, theOne)
+                .executeUpdateAndGeneratedKeys().closing()
+                .readOne { Avatar(readInt("id"), name, age, theOne) }
+        }
     }
-    
 }   
 ```
