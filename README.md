@@ -50,5 +50,8 @@ fun main() = closeableScope {
                 .readOne { Avatar(readInt("id"), name, age, theOne) }
         }
     }
+    
+    val agentSmith = newAvatar("Agent Smith", 46, false)
+
 }   
 ```
