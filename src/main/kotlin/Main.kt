@@ -1,6 +1,6 @@
 import griffio.micro.*
 import java.sql.DriverManager
-import java.sql.Statement
+import java.sql.Statement.RETURN_GENERATED_KEYS
 
 const val jdbc = "jdbc:hsqldb:mem:matrix-database"
 
@@ -14,7 +14,7 @@ fun main() = closeableScope {
     ddl.execute("insert into avatars (name, age, the_one) values ('Morpheus', 42, false)")
     ddl.execute("insert into avatars (name, age, the_one) values ('Neo', 31, true)")
 
-    data class Avatar(val id:Int, val name: String, val age: Int, val theOne: Boolean)
+    data class Avatar(val id: Int, val name: String, val age: Int, val theOne: Boolean)
 
     val avatarResultSetReader = ResultSetReader {
         val id: Int = readInt("id")
@@ -24,7 +24,7 @@ fun main() = closeableScope {
         Avatar(id, name, age, theOne)
     }
 
-    val avatars  = connection.createStatement().closing()
+    val avatars = connection.createStatement().closing()
         .executeQuery("select * from avatars order by name").closing()
         .readAll(avatarResultSetReader)
 
@@ -42,7 +42,7 @@ fun main() = closeableScope {
 
     val sql = "insert into avatars (name, age, the_one) values(?, ?, ?)";
 
-    val trinityId = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS).closing()
+    val trinityId = connection.prepareStatement(sql, RETURN_GENERATED_KEYS).closing()
         .bindString(1, "Trinity")
         .bindInt(2, 33)
         .bindBoolean(3, false)
@@ -61,4 +61,18 @@ fun main() = closeableScope {
     }
 
     println(morpheus)
+
+    val agentSmith = connection.transaction {
+        val newAvatar = Avatar(-1, "Agent Smith", 45, false)
+        prepareStatement("insert into avatars (name, age, the_one) values(?, ?, ?)", RETURN_GENERATED_KEYS).closing()
+            .bindString(1, newAvatar.name)
+            .bindInt(2, newAvatar.age)
+            .bindBoolean(3, newAvatar.theOne)
+            .executeUpdateAndGeneratedKeys().closing().readOne {
+                newAvatar.copy(id = readInt("id"))
+            }
+    }
+
+    println(agentSmith)
+
 }
