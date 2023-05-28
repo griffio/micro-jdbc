@@ -24,11 +24,11 @@ class CoffeesTable(private val con: Connection, private val dbName: String, priv
 
     fun populateTable() = closeableScope {
         con.createStatement().closing().run {
-            executeUpdate("insert into COFFEES values('Colombian', 00101, 7.99, 0, 0)")
-            executeUpdate("insert into COFFEES values('French_Roast', 00049, 8.99, 0, 0)")
-            executeUpdate("insert into COFFEES values('Espresso', 00150, 9.99, 0, 0)")
-            executeUpdate("insert into COFFEES values('Colombian_Decaf', 00101, 8.99, 0, 0)")
-            executeUpdate("insert into COFFEES values('French_Roast_Decaf', 00049, 9.99, 0, 0)").run {
+            executeUpdate("insert into COFFEES(COF_NAME, SUP_ID, PRICE, SALES, TOTAL) values('Colombian', 00101, 7.99, 0, 0)")
+            executeUpdate("insert into COFFEES(COF_NAME, SUP_ID, PRICE, SALES, TOTAL) values('French_Roast', 00049, 8.99, 0, 0)")
+            executeUpdate("insert into COFFEES(COF_NAME, SUP_ID, PRICE, SALES, TOTAL) values('Espresso', 00150, 9.99, 0, 0)")
+            executeUpdate("insert into COFFEES(COF_NAME, SUP_ID, PRICE, SALES, TOTAL) values('Colombian_Decaf', 00101, 8.99, 0, 0)")
+            executeUpdate("insert into COFFEES(COF_NAME, SUP_ID, PRICE, SALES, TOTAL) values('French_Roast_Decaf', 00049, 9.99, 0, 0)").run {
                 println("Populated COFFEES table")
             }
         }
@@ -120,10 +120,9 @@ class CoffeesTable(private val con: Connection, private val dbName: String, priv
     fun batchUpdate() = closeableScope {
 
         val coffeeBatch = listOf(
-            "INSERT INTO COFFEES VALUES('Amaretto', 49, 9.99, 0, 0)",
-            "INSERT INTO COFFEES VALUES('Hazelnut', 49, 9.99, 0, 0)",
-            "INSERT INTO COFFEES VALUES('Amaretto_decaf', 49, 10.99, 0, 0)",
-            "INSERT INTO COFFEES VALUES('Hazelnut_decaf', 49, 10.99, 0, 0)"
+            "INSERT INTO COFFEES (COF_NAME, SUP_ID, PRICE, SALES, TOTAL) VALUES('Hazelnut', 49, 9.99, 0, 0)",
+            "INSERT INTO COFFEES (COF_NAME, SUP_ID, PRICE, SALES, TOTAL) VALUES('Amaretto_decaf', 49, 10.99, 0, 0)",
+            "INSERT INTO COFFEES (COF_NAME, SUP_ID, PRICE, SALES, TOTAL) VALUES('Hazelnut_decaf', 49, 10.99, 0, 0)"
         )
 
         val updateCounts = con.transaction {
