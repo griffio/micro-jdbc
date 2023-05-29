@@ -61,3 +61,9 @@ fun main() = closeableScope {
 
 }   
 ```
+
+### Todo
+
+Context recievers 
+https://github.com/Kotlin/KEEP/blob/master/proposals/context-receivers.md
+
