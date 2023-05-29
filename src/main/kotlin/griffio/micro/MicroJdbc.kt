@@ -12,9 +12,12 @@ fun interface ResultSetReader<out T> {
     fun ResultSet.read(): T
 }
 
+// Except for String, all primitive types return default value when null
 fun ResultSet.readInt(name: String): Int = getInt(name)
 
 fun ResultSet.readString(name: String): String = getString(name)
+
+fun ResultSet.readStringOrNull(name: String): String? = getString(name)
 
 fun ResultSet.readBoolean(name: String): Boolean = getBoolean(name)
 
