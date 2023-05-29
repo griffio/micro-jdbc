@@ -52,20 +52,22 @@ fun PreparedStatement.executeUpdateAndGeneratedKeys(): ResultSet = executeUpdate
     generatedKeys
 }
 
+// A transaction must be committed or rolled back before closing the connection,
+// autoCommit can also throw SQLException as can attempt to commit
 fun <T> Connection.transaction(
     body: Connection.() -> T,
 ): T = try {
-    autoCommit = false
+    autoCommit = false // cannot call commit with autoCommit true
     body().also { commit() }
-} catch (e: Throwable) {
+} catch (eCommit: Throwable) {
     try {
         rollback()
-    } catch (e: Exception) {
-        e.addSuppressed(e) // gotta catch 'em all
+    } catch (eRollback: Exception) {
+        eCommit.addSuppressed(eRollback) // gotta catch 'em all
     }
-    throw e
+    throw eCommit
 } finally {
-    autoCommit = true
+    autoCommit = true // SQLException could be thrown and will propagate
 }
 
 
