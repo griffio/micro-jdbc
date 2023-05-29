@@ -61,7 +61,7 @@ fun <T> Connection.transaction(
     body().also { commit() }
 } catch (eCommit: Throwable) {
     try {
-        rollback()
+        rollback() // Cannot determine if any change was committed, calling the method rollback is the only way to be certain.
     } catch (eRollback: Exception) {
         eCommit.addSuppressed(eRollback) // gotta catch 'em all
     }
