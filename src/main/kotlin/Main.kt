@@ -4,6 +4,9 @@ import java.sql.Statement.RETURN_GENERATED_KEYS
 
 const val jdbc = "jdbc:hsqldb:mem:matrix-database"
 
+/**
+ * Technically, ResultSets are closed by the Statement that produced them, though by convention ResulSets are closed explicitly.
+ */
 fun main() = closeableScope {
 
     val connection = DriverManager.getConnection(jdbc).closing()
