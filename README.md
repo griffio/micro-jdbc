@@ -44,20 +44,24 @@ fun main() = closeableScope {
         |the_one boolean)""".trimMargin())
             
     fun newAvatar(name: String, age: Int, theOne: Boolean): Avatar = closeableScope {
-        connection.transaction {
-            prepareStatement(
-                "insert into avatars (name, age, the_one) values(?, ?, ?)",
-                RETURN_GENERATED_KEYS
-            ).closing()
-                .bindString(1, name)
-                .bindInt(2, age)
-                .bindBoolean(3, theOne)
-                .executeUpdateAndGeneratedKeys().closing()
-                .readOne { Avatar(readInt("id"), name, age, theOne) }
-        }
+        connection.prepareStatement(
+            "insert into avatars (name, age, the_one) values(?, ?, ?)",
+            RETURN_GENERATED_KEYS
+        ).closing()
+            .bindString(1, name)
+            .bindInt(2, age)
+            .bindBoolean(3, theOne)
+            .executeUpdateAndGeneratedKeys().closing()
+            .readOne { Avatar(readInt("id"), name, age, theOne) }
+
     }
-    
-    val agentSmith = newAvatar("Agent Smith", 46, false)
+
+    connection.transaction {
+        val agentSmith = newAvatar("Agent Smith", 46, false)
+        val theOracle = newAvatar("The Oracle", 101, false)
+        println(agentSmith)
+        println(theOracle)
+    }
 
 }   
 ```
