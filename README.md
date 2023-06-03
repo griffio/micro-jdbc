@@ -1,6 +1,13 @@
 # Micro Jdbc for Kotlin
 
-A couple of ideas with extensions for using sequential Jdbc resources and extracting result sets
+Instead of trying to guess your [data access with Kotlin](https://griffio.github.io/programming/2023/04/20/More-Kotlin-Sql-Persistence-Comparision/),
+this is a collection of Kotlin extension methods for Jdbc that can be adapted to your own projects initially.
+
+There is no library and the utility methods can be copy pasted and extended as required.
+
+This is the first rung on the ladder to decide if you need a jdbc wrapper library like https://github.com/jdbi/jdbi or https://github.com/target/lite-for-jdbc and [so on](https://griffio.github.io/programming/2023/04/20/More-Kotlin-Sql-Persistence-Comparision/).
+
+A couple of ideas with extensions for cleaning up using sequential Jdbc resources and extracting result sets.
 
 ### Example
 
